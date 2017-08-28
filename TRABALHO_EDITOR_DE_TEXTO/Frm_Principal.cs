@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Word;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,7 +15,6 @@ namespace TRABALHO_EDITOR_DE_TEXTO
 {
     public partial class Frm_Principal : Form
     {
-        //public string filefilter = "Rich Texto format|*.rtf* |*.txt* |*.doc* |*.docx*";
 
         public Frm_Principal()
         {
@@ -42,67 +42,55 @@ namespace TRABALHO_EDITOR_DE_TEXTO
                     Directory.CreateDirectory(folder);
                 }
             }
-     
             //método construtor da classe savedialog
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = @"c:\CSA_SISTEMAS";
             sfd.Title = " Salvando Arquivos";
-            sfd.Filter = "Arquivo de Texto(*.txt)|*.txt | Rich Text Format(*.Rtf)|*.Rtf | Documento de Texto(*.doc)|*.Doc | (*.Docx)|*.docx";  //filtar o tipo de extensão
+            sfd.Filter = "Arquivo de Texto(*.txt)|*.txt | Rich Text Format(*.Rtf)|*.Rtf";
             sfd.ShowDialog();
 
-            if (string.IsNullOrEmpty(sfd.FileName) == false) // se arquivo existir faça o que se pede abaixo
+            if (string.IsNullOrEmpty(sfd.FileName) == false)
             {
-                try
+                using (StreamWriter writer = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
                 {
-                    using (StreamWriter writer = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                    writer.Write(richTextBox1.Text);
+                    writer.Flush();
 
-                    {
-                        writer.Write(txtconteudo.Text);
-                        writer.Flush();
-
-                    }
-
-                }
-                catch (Exception ex) //classe generica para exceções de erros
-                {
-                    Message.Alertar("Não foi Possível Salvar o seu Arquivo" + ex.Message);
-                    Message.Erro("Contate seu Suporte Tecnico!" + ex.Message);
                 }
             }
         }
-
         private void abrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = @"c:\CSA_SISTEMAS";
-            //ofd.CheckFileExists = true;
-            ofd.Filter = "Arquivo de Texto(*.txt)|*.txt | Rich Text Format(*.Rtf)|*.rtf | Documento de Texto(*.doc)|*.doc; *.docx";
+            ofd.Title = "Abrir Arquivo Extensão txt";
+            ofd.Filter = "Arquivo de Texto(*.txt)|*.txt | Rich Text Format(*.Rtf)|*.Rtf";
             ofd.ShowDialog();
 
             if (string.IsNullOrEmpty(ofd.FileName) == false)
             {
-                try
-                {
+                if (Path.GetExtension(ofd.FileName) == "*.txt")
+
                     using (StreamReader str = new StreamReader(ofd.FileName, Encoding.GetEncoding(CultureInfo.GetCultureInfo("pt-BR").TextInfo.ANSICodePage)))
                     {
-                        txtconteudo.Text = str.ReadToEnd();
+                        richTextBox1.Text = str.ReadToEnd();
                     }
-                }
-                catch (Exception ex)
+                else if (Path.GetExtension(ofd.FileName) == "*.rtf")
                 {
-                    Message.Alertar("Não foi Possível Abrir o seu Arquivo" + ex.Message);
-                    Message.Erro("Contate seu Suporte Tecnico!" + ex.Message);
-
+                    richTextBox1.LoadFile(ofd.FileName);
                 }
+
+
             }
         }
+
 
         private void openToolStripButton_Click_1(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = @"c:\CSA_SISTEMAS";
             ofd.CheckFileExists = true;
-            ofd.Filter = "Arquivo de Texto(*.txt)|*.txt"; //| Rich Text Format(*.Rtf)|*.Rtf | Documento de Texto(*.doc)|*.Doc | (*.Docx)|*.docx";
+            ofd.Filter = "Arquivo de Texto(*.txt)|*.txt";
             ofd.ShowDialog();
 
             if (string.IsNullOrEmpty(ofd.FileName) == false)
@@ -111,7 +99,7 @@ namespace TRABALHO_EDITOR_DE_TEXTO
                 {
                     using (StreamReader str = new StreamReader(ofd.FileName, Encoding.GetEncoding(CultureInfo.GetCultureInfo("pt-BR").TextInfo.ANSICodePage)))
                     {
-                        txtconteudo.Text = str.ReadToEnd();
+                        richTextBox1.Text = str.ReadToEnd();
                     }
                 }
                 catch (Exception)
@@ -138,7 +126,7 @@ namespace TRABALHO_EDITOR_DE_TEXTO
                 {
                     using (StreamWriter writer = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
                     {
-                        writer.Write(txtconteudo.Text);
+                        writer.Write(richTextBox1.Text);
                         writer.Flush();
 
                     }
@@ -150,6 +138,26 @@ namespace TRABALHO_EDITOR_DE_TEXTO
 
                 }
             }
+        }
+
+        private void saveToolStripButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void salvarComoToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var wordApp = new Microsoft.Office.Interop.Word.Application();
+            wordApp.Visible = false;  // abrindo aplicação do office em segundo plano - invisivel
+            var docs = wordApp.Documents.Add();
+
+            // Primeiro parágrafo (texto centralizado)
+            // var paragrafo1 = WordDoc.Content.Paragraphs.Add();
+            //paragrafo1.Range.Text = "Texto centralizado";
+            //paragrafo1.Range.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
+            //paragrafo1.Range.InsertParagraphAfter();
+
+
         }
     }
 }

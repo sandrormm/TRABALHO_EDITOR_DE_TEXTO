@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TRABALHO_EDITOR_DE_TEXTO
 {
-    class WordDoc
+   public class CriandoArquivo
     {
-        public void CriarArquivoWord(string aquivoDoc)
+       // private string strPathFile;
+
+        private void criar()
         {
-
-
-
-
+            
+           
         }
-
-
-
     }
 }
+
